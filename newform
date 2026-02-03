@@ -1,0 +1,20 @@
+<!-- After the Users Access Control card -->
+<div class="card mt-4">
+  <div class="card-header">
+    <h4>Drafts List</h4>
+  </div>
+  <div class="card-body p-0">
+    <table class="table table-striped m-0">
+      <thead>
+        <tr>
+          <th style="width: 10%">ID</th>
+          <th>Title</th>
+          <th style="width: 20%">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="draftsTable">
+        <!-- drafts will load here -->
+      </tbody>
+    </table>
+  </div>
+</div>
