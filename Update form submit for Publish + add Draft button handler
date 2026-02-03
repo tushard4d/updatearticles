@@ -1,0 +1,84 @@
+// Existing form submit listener (for Publish/Update)
+document.getElementById('articleForm').addEventListener('submit', async function (e) {
+  e.preventDefault();
+
+  const title = document.getElementById('title').value.trim();
+  const content = document.getElementById('content').value.trim();
+  const idInput = document.getElementById('editId');
+  const statusInput = document.getElementById('status');
+
+  if (!title || !content) {
+    showMessage('Title and content are required!', true);
+    return;
+  }
+
+  const isEdit = idInput && idInput.value !== '';
+  const action = isEdit ? 'update' : 'add';
+
+  statusInput.value = 'published';  // always publish on submit
+
+  const body = new URLSearchParams({
+    action: action,
+    id: isEdit ? idInput.value : '',
+    title: title,
+    content: content,
+    status: statusInput.value
+  });
+
+  // ... your existing fetch code ...
+  // After success: reload both lists
+  loadArticles();
+  loadDrafts();
+});
+
+// NEW: Save as Draft button
+document.getElementById('saveDraftBtn').addEventListener('click', async function () {
+  const title = document.getElementById('title').value.trim();
+  const content = document.getElementById('content').value.trim();
+  const idInput = document.getElementById('editId');
+  const statusInput = document.getElementById('status');
+
+  if (!title || !content) {
+    showMessage('Title and content are required!', true);
+    return;
+  }
+
+  const isEdit = idInput && idInput.value !== '';
+  const action = isEdit ? 'update' : 'add';
+
+  statusInput.value = 'draft';  // set to draft
+
+  const body = new URLSearchParams({
+    action: action,
+    id: isEdit ? idInput.value : '',
+    title: title,
+    content: content,
+    status: statusInput.value
+  });
+
+  try {
+    const res = await fetch('../articles_action.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: body
+    });
+
+    const result = await res.json();
+
+    if (result.status === 'success') {
+      showMessage(result.message || (isEdit ? 'Draft updated!' : 'Draft saved!'), false);
+      document.getElementById('articleForm').reset();
+      if (idInput) idInput.remove();
+      document.getElementById('publishBtn').textContent = 'Publish Article';
+      document.querySelector('.card-title').textContent = 'Add Articles';
+      loadArticles();
+      loadDrafts();
+    } else {
+      showMessage(result.message || 'Failed to save draft', true);
+    }
+  } catch (err) {
+    showMessage('Error: ' + err.message, true);
+  }
+});
+
+// Existing editArticle() stays the same — it loads into form for draft or published
