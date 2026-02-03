@@ -1,0 +1,16 @@
+<form id="articleForm" class="mb-4">
+  <div class="mb-3">
+    <label class="form-label">Article Title</label>
+    <input type="text" id="title" name="title" class="form-control" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Article Content</label>
+    <textarea id="content" name="content" class="form-control" rows="4" required></textarea>
+  </div>
+  <input type="hidden" id="editId" name="id">  <!-- already have this for edits -->
+  <input type="hidden" id="status" name="status" value="published">  <!-- NEW: default to published -->
+
+  <!-- Replace old submit button with these two -->
+  <button type="button" id="saveDraftBtn" class="btn btn-secondary me-2">Save as Draft</button>
+  <button type="submit" id="publishBtn" class="btn btn-primary">Publish Article</button>
+</form>
