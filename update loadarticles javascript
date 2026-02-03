@@ -1,0 +1,59 @@
+// Existing: load published articles
+async function loadArticles() {
+  // ... your existing code ...
+  // Add WHERE status = 'published' in backend (see Step 4)
+}
+
+// NEW: load drafts
+async function loadDrafts() {
+  try {
+    const res = await fetch('../articles_action.php?action=fetch_drafts', {
+      method: 'GET',
+      cache: 'no-store'
+    });
+
+    if (!res.ok) throw new Error(`Status ${res.status}`);
+
+    const data = await res.json();
+
+    if (data.status !== 'success') {
+      document.getElementById('draftsTable').innerHTML = '<tr><td colspan="3" class="text-center">No drafts</td></tr>';
+      return;
+    }
+
+    const drafts = data.data || [];
+    let rows = '';
+    drafts.forEach(article => {
+      const safeTitle = JSON.stringify(article.title).slice(1, -1);
+      const safeContent = JSON.stringify(article.content).slice(1, -1);
+
+      rows += `
+      <tr>
+        <td>${article.id}</td>
+        <td>${article.title}</td>
+        <td>
+          <button class="btn btn-warning btn-sm me-1"
+                  onclick="editArticle(${article.id}, '${safeTitle}', '${safeContent}')">
+            Edit
+          </button>
+          <button class="btn btn-danger btn-sm"
+                  onclick="deleteArticle(${article.id})">
+            Delete
+          </button>
+        </td>
+      </tr>
+      `;
+    });
+
+    document.getElementById('draftsTable').innerHTML = rows || '<tr><td colspan="3" class="text-center">No drafts yet</td></tr>';
+  } catch (err) {
+    console.error(err);
+    document.getElementById('draftsTable').innerHTML = '<tr><td colspan="3">Error loading drafts</td></tr>';
+  }
+}
+
+// Load both on page load
+document.addEventListener('DOMContentLoaded', () => {
+  loadArticles();
+  loadDrafts();
+});
